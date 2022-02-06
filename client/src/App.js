@@ -11,7 +11,7 @@ function App() {
 		<Router history={history}>
 			<Routes>
 				<Route exact path="/login" element={<Login />} />
-				<Route exact path="/signup" component={Signup} />
+				<Route exact path="/signup" element={<Signup />} />
 			</Routes>
 		</Router>
 	);

@@ -1,5 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const MongoServerInit = require("./db/db");
+
+// Initialize Mongo DB Server Connection
+MongoServerInit();
+
 var app = express();
 
 const PORT = process.env.PORT || 4000;

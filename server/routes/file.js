@@ -43,7 +43,6 @@ router.post("/upload", auth, async (req, res) => {
 		} else {
 			try {
 				if (req.user) {
-					console.log(req.user);
 					const newFile = await File.create({
 						name: req.file.filename,
 						user: req.user.id,
@@ -92,16 +91,58 @@ router.get("/download/:id", auth, async (req, res) => {
 });
 
 router.get("/user/all", auth, async (req, res) => {
+	if (!req.user) {
+		return res.status(401).send("User not logged in.");
+	}
 	try {
 		const files = await File.find({ user: req.user.id });
 		res.status(200).json({
 			status: "success",
 			files,
 		});
-	} catch (error) {
+	} catch (e) {
 		res.status(500).json({
 			status: "Fail",
-			error,
+			e,
+		});
+	}
+});
+
+router.get("/admin/all", auth, async (req, res) => {
+	if (!req.user) {
+		return res.status(401).send("User not logged in.");
+	}
+	try {
+		const user = await User.findById(req.user.id);
+		let files;
+		if (user) {
+			if (user.isAdmin) {
+				files = await File.find()
+					.populate("user")
+					.exec((e, files) => {
+						if (e)
+							res.status(500).json({
+								status: "Fail",
+								e,
+							});
+						files.forEach((file) => {
+							const tempUser = file.user;
+							file.user = {};
+							file.user.email = tempUser.email;
+						});
+						res.status(200).json({
+							status: "success",
+							files,
+						});
+					});
+			} else {
+				return res.status(401).send("User doesnot have enough privileges");
+			}
+		}
+	} catch (e) {
+		res.status(500).json({
+			status: "Fail",
+			e,
 		});
 	}
 });

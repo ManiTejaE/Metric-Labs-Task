@@ -13,6 +13,7 @@ function useUserService() {
 	return {
 		signup,
 		login,
+		logout,
 		getUser,
 	};
 
@@ -66,6 +67,13 @@ function useUserService() {
 			};
 			history.push(from);
 		});
+	}
+
+	function logout() {
+		// remove user from local storage, set auth state to null and redirect to login page
+		localStorage.clear();
+		setAuth(null);
+		// window.location.reload();
 	}
 
 	function getUser(token) {

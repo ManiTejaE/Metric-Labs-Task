@@ -49,7 +49,6 @@ router.post(
 				res.status(200).json({ token });
 			});
 		} catch (e) {
-			console.log(e.message);
 			res.status(500).send("Error signing up!");
 		}
 	}

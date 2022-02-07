@@ -11,6 +11,7 @@ const Home = () => {
 	const user = useRecoilValue(userAtom);
 	const auth = useRecoilValue(authAtom);
 	const [selectedFile, setSelectedFile] = useState([]);
+	const [search, setSearch] = useState("");
 	const [downloadLoading, setDownloadLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [fileList, setFileList] = useState([]);
@@ -46,7 +47,6 @@ const Home = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(selectedFile);
 		if (selectedFile.length !== 0) {
 			const formData = new FormData();
 
@@ -77,9 +77,15 @@ const Home = () => {
 				setDownloadLoading(false);
 			})
 			.catch((e) => {
-				console.log(e);
 				setDownloadLoading(false);
 			});
+	};
+
+	const filteredFileList = fileList.filter((file) => file.name.toLowerCase().includes(search.toLowerCase()));
+
+	const handleChangeSearch = (e) => {
+		setSearch(e.target.value);
+		fileList.filter();
 	};
 
 	return (
@@ -107,33 +113,40 @@ const Home = () => {
 			</div>
 			{fileList.length ? (
 				<div className="list-card card">
-					<h6>List of files (Total: {fileList.length})</h6>
-					<table className="table table-sm">
-						<thead>
-							<tr>
-								<th scope="col">#</th>
-								{user ? user.isAdmin && <th scope="col">User Email</th> : null}
-								<th scope="col">Filename</th>
-								<th scope="col" className="text-center">
-									Download
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{fileList.map((item, idx) => (
-								<tr key={idx}>
-									<th scope="row">{idx + 1}</th>
-									{user.isAdmin && <th scope="col">{item.user.email}</th>}
-									<td>{item.name}</td>
-									<td className="text-center">
-										<button className="btn btn-primary" onClick={() => handleDownload(item._id, item.name)} disabled={downloadLoading}>
-											<i className="bi bi-cloud-arrow-down"></i>
-										</button>
-									</td>
+					<div className="heading d-flex align-items-center justify-content-between">
+						<h6>List of files (Total: {fileList.length})</h6>
+						<div className="">
+							<input type="text" className="form-control" id="search_files" placeholder="Search" onChange={handleChangeSearch} />
+						</div>
+					</div>
+					<div className="table-wrapper">
+						<table className="table table-sm">
+							<thead>
+								<tr>
+									<th scope="col">#</th>
+									{user ? user.isAdmin && <th scope="col">User Email</th> : null}
+									<th scope="col">Filename</th>
+									<th scope="col" className="text-center">
+										Download
+									</th>
 								</tr>
-							))}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{filteredFileList.map((item, idx) => (
+									<tr key={idx}>
+										<th scope="row">{idx + 1}</th>
+										{user.isAdmin && <th scope="col">{item.user.email}</th>}
+										<td>{item.name}</td>
+										<td className="text-center">
+											<button className="btn btn-primary" onClick={() => handleDownload(item._id, item.name)} disabled={downloadLoading}>
+												<i className="bi bi-cloud-arrow-down"></i>
+											</button>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			) : null}
 		</div>

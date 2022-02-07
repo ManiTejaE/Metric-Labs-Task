@@ -39,6 +39,7 @@ const upload = multer({
 router.post("/upload", auth, async (req, res) => {
 	upload(req, res, async function (err) {
 		if (err) {
+			console.log(err);
 			res.status(415).json({ message: "Uploaded file is not a pdf." });
 		} else {
 			try {

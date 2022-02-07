@@ -17,27 +17,31 @@ const Home = () => {
 
 	useEffect(() => {
 		if (auth) {
-			userService.getUser().then((user) => {
-				console.log(user);
-			});
-		}
-		if (auth) {
-			loadAllFiles();
+			userService.getUser();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [auth]);
 
+	useEffect(() => {
+		if (user) {
+			loadAllFiles();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user]);
+
 	function loadAllFiles() {
-		fileService.getAllByUser().then((res) => {
-			console.log(res);
-			setFileList(res.files);
-		});
+		user.isAdmin
+			? fileService.getAllAsAdmin().then((res) => {
+					setFileList(res.files);
+			  })
+			: fileService.getAllAsUser().then((res) => {
+					setFileList(res.files);
+			  });
 	}
 
 	const handleFileChange = (e) => {
 		setSelectedFile(e.target.files[0]);
 		setError("");
-		console.log("selected: ", e.target.files);
 	};
 
 	const handleSubmit = (e) => {
@@ -82,7 +86,7 @@ const Home = () => {
 		<div className="home">
 			<div className="input-card card">
 				<div className="greet d-flex justify-content-between">
-					<h4>Hello {user.first_name ? `${user.first_name}` : "User"}</h4>
+					<h4>Hello {user ? (user.first_name ? `${user.first_name}` : "User") : "User"}</h4>
 					<button className="btn btn-secondary" onClick={handleLogout}>
 						Logout
 					</button>
@@ -101,33 +105,37 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			<div className="list-card card">
-				<h6>List of files (Total: {fileList.length})</h6>
-				<table className="table table-sm">
-					<thead>
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">Filename</th>
-							<th scope="col" className="text-center">
-								Download
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{fileList.map((item, idx) => (
-							<tr key={idx}>
-								<th scope="row">{idx + 1}</th>
-								<td>{item.name}</td>
-								<td className="text-center">
-									<button className="btn btn-primary" onClick={() => handleDownload(item._id, item.name)} disabled={downloadLoading}>
-										<i className="bi bi-cloud-arrow-down"></i>
-									</button>
-								</td>
+			{fileList.length ? (
+				<div className="list-card card">
+					<h6>List of files (Total: {fileList.length})</h6>
+					<table className="table table-sm">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								{user ? user.isAdmin && <th scope="col">User Email</th> : null}
+								<th scope="col">Filename</th>
+								<th scope="col" className="text-center">
+									Download
+								</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
+						</thead>
+						<tbody>
+							{fileList.map((item, idx) => (
+								<tr key={idx}>
+									<th scope="row">{idx + 1}</th>
+									{user.isAdmin && <th scope="col">{item.user.email}</th>}
+									<td>{item.name}</td>
+									<td className="text-center">
+										<button className="btn btn-primary" onClick={() => handleDownload(item._id, item.name)} disabled={downloadLoading}>
+											<i className="bi bi-cloud-arrow-down"></i>
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			) : null}
 		</div>
 	);
 };

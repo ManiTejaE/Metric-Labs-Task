@@ -96,7 +96,7 @@ const Login = () => {
 						<div className="input mb-3">
 							<label htmlFor="login_email">Email</label>
 							<div className="input-group">
-								<span class="input-group-text">
+								<span className="input-group-text">
 									<i className="bi bi-envelope"></i>
 								</span>
 								<input id="login_email" className="form-control" type="email" name="email" value={data.email} onChange={handleInputChange} required />
@@ -106,7 +106,7 @@ const Login = () => {
 						<div className="input input-group mb-3">
 							<label htmlFor="login_password">Password</label>
 							<div className="input-group">
-								<span class="input-group-text">
+								<span className="input-group-text">
 									<i className="bi bi-key"></i>
 								</span>
 								<input id="login_password" className="form-control" type="password" name="password" value={data.password} onChange={handleInputChange} required />

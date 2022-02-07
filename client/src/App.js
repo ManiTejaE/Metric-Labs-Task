@@ -11,24 +11,26 @@ import Signup from "./pages/Signup/Signup";
 
 function App() {
 	return (
-		<Router history={history}>
-			<WithAxios>
-				<Routes>
-					<Route exact path="/login" element={<Login />} />
-					<Route exact path="/signup" element={<Signup />} />
-					<Route
-						exact
-						path="/home"
-						element={
-							<RequireAuth>
-								<Home />
-							</RequireAuth>
-						}
-					/>
-					<Route path="/" element={<Navigate replace to="/home" />} />
-				</Routes>
-			</WithAxios>
-		</Router>
+		<div className="App">
+			<Router history={history}>
+				<WithAxios>
+					<Routes>
+						<Route exact path="/login" element={<Login />} />
+						<Route exact path="/signup" element={<Signup />} />
+						<Route
+							exact
+							path="/home"
+							element={
+								<RequireAuth>
+									<Home />
+								</RequireAuth>
+							}
+						/>
+						<Route path="/" element={<Navigate replace to="/home" />} />
+					</Routes>
+				</WithAxios>
+			</Router>
+		</div>
 	);
 }
 

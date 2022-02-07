@@ -1,5 +1,5 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { history, useFetchWrapper } from "../helpers";
+import { useFetchWrapper } from "../helpers";
 import { authAtom, userAtom } from "../state";
 import { useNavigate } from "react-router-dom";
 
@@ -38,8 +38,7 @@ function useUserService() {
 			localStorage.setItem("metrictaskauth", JSON.stringify({ token: res.token }));
 			setAuth(res.token);
 			getUser(res.token);
-			// get return url from location state or default to home page
-			history.push("/home");
+			navigate("/home");
 		});
 	}
 

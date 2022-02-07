@@ -33,10 +33,14 @@ function useUserService() {
 		};
 
 		return fetchWrapper(requestOptions).then((res) => {
-			localStorage.setItem("auth", JSON.stringify({ token: res.token }));
+			localStorage.setItem("metrictaskauth", JSON.stringify({ token: res.token }));
 			setAuth(res.token);
 			getUser(res.token);
-			history.push("/home");
+			// get return url from location state or default to home page
+			const { from } = history.location.state || {
+				from: { pathname: "/dashboard" },
+			};
+			history.push(from);
 		});
 	}
 
@@ -54,8 +58,8 @@ function useUserService() {
 		};
 
 		return fetchWrapper(requestOptions).then((res) => {
-			localStorage.setItem("auth", JSON.stringify({ token: res.token }));
-			setAuth(res.token);
+			localStorage.setItem("metrictaskauth", JSON.stringify({ token: res.token }));
+			setAuth(res);
 			getUser(res.token);
 			const { from } = history.location.state || {
 				from: { pathname: "/home" },
@@ -65,13 +69,13 @@ function useUserService() {
 	}
 
 	function getUser(token) {
-		console.log(auth.token, token);
+		auth?.token && (token = auth?.token);
 		const requestOptions = {
 			method: "get",
 			url: `${baseUrl}/user/me`,
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: "Bearer " + auth?.token || token,
+				Authorization: "Bearer " + token,
 			},
 		};
 

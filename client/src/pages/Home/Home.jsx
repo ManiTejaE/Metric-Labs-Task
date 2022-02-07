@@ -11,6 +11,7 @@ const Home = () => {
 	const user = useRecoilValue(userAtom);
 	const auth = useRecoilValue(authAtom);
 	const [selectedFile, setSelectedFile] = useState([]);
+	const [downloadLoading, setDownloadLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [fileList, setFileList] = useState([]);
 
@@ -60,31 +61,44 @@ const Home = () => {
 		}
 	};
 
+	const handleLogout = () => {
+		userService.logout();
+	};
+
 	const handleDownload = (id, name) => {
+		setDownloadLoading(true);
 		fileService
 			.download(id, name)
-			.then((res) => {
-				console.log(res);
+			.then(() => {
+				setDownloadLoading(false);
 			})
 			.catch((e) => {
-				console.log();
+				console.log(e);
+				setDownloadLoading(false);
 			});
 	};
 
 	return (
 		<div className="home">
 			<div className="input-card card">
-				<h4>{user && `Hello ${user.first_name} ${user.last_name}`}</h4>
-				<div className="col-12 row mb-3">
+				<div className="greet d-flex justify-content-between">
+					<h4>Hello {user.first_name ? `${user.first_name}` : "User"}</h4>
+					<button className="btn btn-secondary" onClick={handleLogout}>
+						Logout
+					</button>
+				</div>
+				<div className="mb-3">
 					<label htmlFor="formFile" className="form-label">
 						File Upload
 					</label>
 					<input className="form-control" type="file" name="avatar" id="formFile" onChange={handleFileChange} />
 					<small className="text-danger">{error}</small>
-					<button className="btn btn-primary my-3" onClick={handleSubmit}>
-						<i className="bi bi-cloud-arrow-up"></i>
-						<span className="p-2">Upload</span>
-					</button>
+					<div>
+						<button className="btn btn-primary my-3" onClick={handleSubmit}>
+							<i className="bi bi-cloud-arrow-up"></i>
+							<span className="p-2">Upload</span>
+						</button>
+					</div>
 				</div>
 			</div>
 			<div className="list-card card">
@@ -103,10 +117,9 @@ const Home = () => {
 						{fileList.map((item, idx) => (
 							<tr key={idx}>
 								<th scope="row">{idx + 1}</th>
-								<td>{item._id}</td>
 								<td>{item.name}</td>
 								<td className="text-center">
-									<button className="btn btn-primary" onClick={() => handleDownload(item._id, item.name)}>
+									<button className="btn btn-primary" onClick={() => handleDownload(item._id, item.name)} disabled={downloadLoading}>
 										<i className="bi bi-cloud-arrow-down"></i>
 									</button>
 								</td>

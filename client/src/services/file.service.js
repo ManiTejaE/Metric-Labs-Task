@@ -9,8 +9,9 @@ function useFileService() {
 
 	return {
 		upload,
-		getAllByUser,
+		getAllAsUser,
 		download,
+		getAllAsAdmin,
 	};
 
 	function upload(file) {
@@ -27,7 +28,7 @@ function useFileService() {
 		return fetchWrapper(requestOptions);
 	}
 
-	function getAllByUser() {
+	function getAllAsUser() {
 		const requestOptions = {
 			method: "get",
 			url: `${baseUrl}/file/user/all`,
@@ -57,5 +58,17 @@ function useFileService() {
 		return fetchWrapper(requestOptions).then((res) => {
 			saveAsPDF(res, name);
 		});
+	}
+
+	async function getAllAsAdmin() {
+		const requestOptions = {
+			method: "get",
+			url: `${baseUrl}/file/admin/all`,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		};
+
+		return await fetchWrapper(requestOptions);
 	}
 }

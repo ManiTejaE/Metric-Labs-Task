@@ -1,5 +1,5 @@
 import { useFetchWrapper } from "../helpers";
-
+import { saveAs } from "file-saver";
 
 export { useFileService };
 
@@ -10,6 +10,7 @@ function useFileService() {
 	return {
 		upload,
 		getAllByUser,
+		download,
 	};
 
 	function upload(file) {
@@ -36,5 +37,25 @@ function useFileService() {
 		};
 
 		return fetchWrapper(requestOptions);
+	}
+
+	function saveAsPDF(binaryData, name) {
+		const file = new Blob([binaryData], { type: "application/pdf" });
+		saveAs(file, name);
+	}
+
+	function download(id, name) {
+		const requestOptions = {
+			method: "get",
+			url: `${baseUrl}/file/download/${id}`,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			responseType: "blob",
+		};
+
+		return fetchWrapper(requestOptions).then((res) => {
+			saveAsPDF(res, name);
+		});
 	}
 }

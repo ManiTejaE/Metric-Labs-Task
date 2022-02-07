@@ -65,7 +65,6 @@ const Login = () => {
 			userService
 				.login(data.email, data.password)
 				.then((res) => {
-					console.log(res);
 					setData({
 						...data,
 						isSubmitting: false,

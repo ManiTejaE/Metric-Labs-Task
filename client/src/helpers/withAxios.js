@@ -9,7 +9,6 @@ export const WithAxios = ({ children }) => {
 	useMemo(() => {
 		axios.interceptors.request.use(
 			async (req) => {
-				console.log(auth);
 				if (auth != null) {
 					req.headers.Authorization = "Bearer " + auth.token;
 				}

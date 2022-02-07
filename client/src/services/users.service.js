@@ -1,6 +1,7 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { history, useFetchWrapper } from "../helpers";
 import { authAtom, userAtom } from "../state";
+import { useNavigate } from "react-router-dom";
 
 export { useUserService };
 
@@ -9,6 +10,7 @@ function useUserService() {
 	const fetchWrapper = useFetchWrapper();
 	const [auth, setAuth] = useRecoilState(authAtom);
 	const setUser = useSetRecoilState(userAtom);
+	const navigate = useNavigate();
 
 	return {
 		signup,
@@ -18,7 +20,6 @@ function useUserService() {
 	};
 
 	function signup(first_name, last_name, email, password) {
-		console.log(baseUrl);
 		const requestOptions = {
 			method: "post",
 			url: `${baseUrl}/auth/signup`,
@@ -38,10 +39,7 @@ function useUserService() {
 			setAuth(res.token);
 			getUser(res.token);
 			// get return url from location state or default to home page
-			const { from } = history.location.state || {
-				from: { pathname: "/dashboard" },
-			};
-			history.push(from);
+			history.push("/home");
 		});
 	}
 
@@ -62,10 +60,7 @@ function useUserService() {
 			localStorage.setItem("metrictaskauth", JSON.stringify({ token: res.token }));
 			setAuth(res);
 			getUser(res.token);
-			const { from } = history.location.state || {
-				from: { pathname: "/home" },
-			};
-			history.push(from);
+			navigate("/home");
 		});
 	}
 
@@ -73,7 +68,7 @@ function useUserService() {
 		// remove user from local storage, set auth state to null and redirect to login page
 		localStorage.clear();
 		setAuth(null);
-		// window.location.reload();
+		window.location.reload();
 	}
 
 	function getUser(token) {

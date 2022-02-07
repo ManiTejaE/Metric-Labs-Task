@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { history } from "../../helpers";
 import { useUserService } from "../../services/users.service";
+import { authAtom } from "../../state";
 
 import "./signup.styles.scss";
 
 const Signup = () => {
 	const [data, setData] = useState({});
 	const [error, setError] = useState({});
+	const auth = useRecoilValue(authAtom);
+	const navigate = useNavigate();
 
 	const userService = useUserService();
+
+	useEffect(() => {
+		if (auth) {
+			history.push("/home");
+		}
+	}, [auth]);
 
 	const handleInputChange = (e) => {
 		setData({
@@ -59,12 +71,10 @@ const Signup = () => {
 
 		if (validateForm()) {
 			userService.signup(data.fullName, data.lastName, data.email, data.password).then((res) => {
-				console.log(res);
 				setData({
 					...data,
 					isSubmitting: false,
 				}).catch((e) => {
-					console.log(e);
 					setData({
 						...data,
 						isSubmitting: false,
@@ -140,9 +150,14 @@ const Signup = () => {
 						</div>
 					</div>
 					<small className="text-danger">{error.global}</small>
-					<button type="submit" className="btn btn-primary m-auto" disabled={data.isSubmitting}>
-						Login
-					</button>
+					<div className="m-auto" style={{ width: "fit-content" }}>
+						<button type="submit" className="btn btn-primary me-3" disabled={data.isSubmitting}>
+							Sign Up
+						</button>
+						<button type="button" className="btn btn-success" onClick={() => navigate("/login")} disabled={data.isSubmitting}>
+							Login
+						</button>
+					</div>
 					{data.errorMessage && <span className="form-error">{data.errorMessage}</span>}
 				</form>
 			</div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { history } from "../../helpers";
 import { useUserService } from "../../services";
@@ -17,13 +18,14 @@ const Login = () => {
 	const [data, setData] = useState(initialState);
 	const [error, setError] = useState({});
 	const auth = useRecoilValue(authAtom);
+	const navigate = useNavigate();
 	const userService = useUserService();
 
 	useEffect(() => {
 		if (auth) {
 			history.push("/home");
 		}
-	});
+	}, [auth]);
 
 	const handleInputChange = (e) => {
 		setData({
@@ -72,7 +74,6 @@ const Login = () => {
 					history.push("/home");
 				})
 				.catch((e) => {
-					console.log(e);
 					setData({
 						...data,
 						isSubmitting: false,
@@ -114,9 +115,14 @@ const Login = () => {
 						</div>
 					</div>
 					<small className="text-danger">{error.global}</small>
-					<button type="submit" className="btn btn-primary" disabled={data.isSubmitting}>
-						Login
-					</button>
+					<div className="m-auto" style={{ width: "fit-content" }}>
+						<button type="submit" className="btn btn-primary me-3" disabled={data.isSubmitting}>
+							Login
+						</button>
+						<button type="button" className="btn btn-success" onClick={() => navigate("/signup")} disabled={data.isSubmitting}>
+							Sign Up
+						</button>
+					</div>
 					{data.errorMessage && <span className="form-error">{data.errorMessage}</span>}
 				</form>
 			</div>
